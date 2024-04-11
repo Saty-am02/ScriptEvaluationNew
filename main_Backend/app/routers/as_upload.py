@@ -164,9 +164,10 @@ def uploadfile_main(exam_id,subject_id,as_PDFpath, qid,student_id):
             
 
             print(qid_list)
+            
             if qid[0] == 0:
                 qid = qid[1:]
-                
+
             if qid not in str(qid_list):
                 print("[-]Question ID is not pesent")
                 return dicts
