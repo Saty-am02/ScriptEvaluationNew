@@ -260,7 +260,23 @@ def extract_text(file_path):
             
 
 
+@es_upload_router.post("/questions")
+def num_question(exam_id:str,subject:str):
+    try:
+        storage_client = firebase_admin.storage.bucket()
 
+        # Construct the path
+        path = f"main_ES/{exam_id}/{subject}/"
+
+        # Get all blobs in the specified path
+        blobs = storage_client.list_blobs(prefix=path)
+        quest = []
+        for blob in blobs:
+            if len(blob.name.split('/')[-2]) < 3:
+                quest.append(blob.name.split('/')[-2])
+        return max(quest)
+    except:
+        return 0
 
 
 
