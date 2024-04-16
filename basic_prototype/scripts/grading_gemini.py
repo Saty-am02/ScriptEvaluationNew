@@ -7,7 +7,7 @@ import docx2txt
 import PIL.Image
 
 
-GEMINI_API = "AIzaSyCtQ914aymvoEhR07yzd9wB0EnkGBCK8JY"
+GEMINI_API = "AIzaSyAPpvH6HwOg5DnW-FqaqcmJWRV8lbWnKUk"
 
 generation_config = {
         "temperature":0,
@@ -66,7 +66,7 @@ def evaluate_the_AnswerScript_gemini(image_paths):
         
      
    
-        answer_scheme = docx2txt.process("app/uploads/testEval.docx")
+        answer_scheme = docx2txt.process("C:/Ganglia/ScriptEvaluationNew/basic_prototype/app/uploads/testEval.docx")
         # print(answer_scheme)
 
         max_marks='10'
@@ -81,8 +81,7 @@ def evaluate_the_AnswerScript_gemini(image_paths):
 
 # Replace 'your_image_paths' with a list of paths to your image files
 image_paths = [
-    r'app/uploads/Answer1.png',
-    r'app/uploads/Answer2.png',
+    r'C:/Ganglia/ScriptEvaluationNew/basic_prototype/app/uploads/Answer1.png',
 # Add more paths as needed
 ]
 

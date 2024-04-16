@@ -2,3 +2,5 @@ flask
 firebase_admin
 python-docx
 pymupdf
+google-cloud-vision
+docx2txt

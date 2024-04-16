@@ -16,7 +16,7 @@ import requests
 import pandas as pd
 import firebase_admin
 from firebase_admin import credentials, storage
-from typing import Annotated,List,Union
+#from typing import Annotated,List,Union
 
 
 es_upload_router = APIRouter()
@@ -24,7 +24,7 @@ es_upload_router = APIRouter()
 
 GEMINI_API = "AIzaSyD-HzbQwUFUN9libpS9NtXvYWVq8ibXCTA"
 
-generation_config = {
+generation_config = {  
     "temperature": 0,
     "top_p": 1,
     "top_k": 1,
