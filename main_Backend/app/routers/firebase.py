@@ -28,13 +28,14 @@ firebase_API = APIRouter()
 
 @firebase_API.get("/get_students")
 def get_students():
+    print("Getting students")
     student_dict = {}
     student_ref = db.collection('SID')
     all_students = student_ref.stream()
     for SID in all_students:
         update_sequence = [(SID.id, SID.to_dict()['Uploaded'])]
         student_dict.update(update_sequence)
-        # print(student_dict)
+        print(student_dict)
     
     return student_dict
 
@@ -74,4 +75,3 @@ def get_examIDs():
         all_exams.append(exam.id)
     
     return ({"Exams" : all_exams})
-

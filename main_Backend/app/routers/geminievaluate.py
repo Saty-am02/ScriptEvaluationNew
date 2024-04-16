@@ -77,7 +77,7 @@ except Exception as e:
 def is_file_present(file_path_cloud,file_path_local):
     try:
         file  = storage.child(file_path_cloud).download(file_path_local)
-        delete_file(file_path_local)
+        #delete_file(file_path_local)
 
         print(f"[+]File Present at :  {file_path_cloud} ")
         return True
@@ -87,9 +87,12 @@ def is_file_present(file_path_cloud,file_path_local):
 
 
 
-def delete_file(filename):
-    os.remove(filename)
 
+def delete_file(filename):
+    try:
+        os.remove(filename)
+    except:
+        print("[-]File cannot be deleted as it is not present")
 
 
 
@@ -280,11 +283,11 @@ def geminiEvaluate_main(exam_id,subject_id):
 def cleanup(exam_id,subject_id):
 
     print("[@.]CLEANING UP")
-    delete_file("expectedanswer.jpeg")
-    delete_file("studentanswer.jpeg")
-    delete_file(f"{exam_id}-{subject_id}_data.csv")
-    delete_file(f"{exam_id}-{subject_id}_studentdata.csv")
-    delete_file(f"{exam_id}-{subject_id}_results.json")
+    #delete_file("expectedanswer.jpeg")
+    #delete_file("studentanswer.jpeg")
+    #delete_file(f"{exam_id}-{subject_id}_data.csv")
+    #delete_file(f"{exam_id}-{subject_id}_studentdata.csv")
+    #delete_file(f"{exam_id}-{subject_id}_results.json")
     print("[@+]CLEANING UP DONE!")
 
 

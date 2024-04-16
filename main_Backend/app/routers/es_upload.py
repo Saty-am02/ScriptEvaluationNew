@@ -80,6 +80,8 @@ def is_file_present(file_path_cloud,file_path_local):
     try:
         file  = storage.child(file_path_cloud).download(file_path_local)
         print(f"[+]File Present at :  {file} ")
+        print(file_path_cloud)
+        print(file_path_local)
         return True
     except Exception as e:
         print(f"[-]csv file not present: {e}")
@@ -100,8 +102,10 @@ def save_upload_file(upload_file: UploadFile, destination: Path) -> str:
 
 
 def delete_file(filename):
-    os.remove(filename)
-
+    try:
+        os.remove(filename)
+    except:
+        print("[-]File cannot be deleted as it is not present")
 
 
 
@@ -135,7 +139,23 @@ def pdf2img(pdf_path):
         combined_image.save(f"{filename}.jpeg", "JPEG")
         return filename
 
+@es_upload_router.post("/questions")
+def num_question(exam_id:str,subject:str):
+    try:
+        storage_client = firebase_admin.storage.bucket()
 
+        # Construct the path
+        path = f"main_ES/{exam_id}/{subject}/"
+
+        # Get all blobs in the specified path
+        blobs = storage_client.list_blobs(prefix=path)
+        quest = []
+        for blob in blobs:
+            if len(blob.name.split('/')[-2]) < 3:
+                quest.append(blob.name.split('/')[-2])
+        return max(quest)
+    except:
+        return 0
 
 
 
@@ -162,7 +182,7 @@ def uploadfile_main(exam_id,subject_id,es_PDFpath, qid, question, max_marks):
         path_local_JPEG = "expectedanswer.jpeg"
         
         path_on_cloud_CSV = f"main_ES/{exam_id}/{subject_id}/{exam_id}-{subject_id}_data.csv"
-        path_local_CSV = f"{exam_id}-{subject_id}_data.csv"
+        path_local_CSV = f"test101-101_data.csv"
         #storing in the cloud
         storage.child(path_on_cloud_PDF).put(path_local_PDF)
         storage.child(path_on_cloud_JPEG).put(path_local_JPEG)
@@ -240,7 +260,23 @@ def extract_text(file_path):
             
 
 
+@es_upload_router.post("/questions")
+def num_question(exam_id:str,subject:str):
+    try:
+        storage_client = firebase_admin.storage.bucket()
 
+        # Construct the path
+        path = f"main_ES/{exam_id}/{subject}/"
+
+        # Get all blobs in the specified path
+        blobs = storage_client.list_blobs(prefix=path)
+        quest = []
+        for blob in blobs:
+            if len(blob.name.split('/')[-2]) < 3:
+                quest.append(blob.name.split('/')[-2])
+        return max(quest)
+    except:
+        return 0
 
 
 
@@ -257,13 +293,16 @@ async def ES_upload(exam_id:str,subject_id:str, mark: int,question_id:str,questi
         file_one_path = save_upload_file(ES, Path(f"expectedanswer.pdf"))
     
 
-        json_data = uploadfile_main(exam_id,subject_id,file_one_path,question_id,question,max_marks)
+        json_data = uploadfile_main(exam_id,subject_id,file_one_path,question_id,question_str,max_marks)
     
     
     #print(f"{file_one_path},,{file_two_path}")
+        
         delete_file(file_one_path)
         delete_file("expectedanswer.jpeg")
-   # delete_file(f"{exam_id}-{subject_id}_data.csv")
+        delete_file(f"{exam_id}-{subject_id}_data.csv")
+        
+
     elif question_file:
         max_marks = str(mark)
 
@@ -275,11 +314,13 @@ async def ES_upload(exam_id:str,subject_id:str, mark: int,question_id:str,questi
         extracted_question = extract_text(question_file_path)
 
         json_data = uploadfile_main(exam_id,subject_id,file_one_path,question_id,extracted_question,max_marks)
-
+        
+        
         delete_file(file_one_path)
         delete_file("expectedanswer.jpeg")
         delete_file(question_file_path)
         delete_file("question.jpeg")
+        
     else:
         json_data = {"Error":"[-]No Question is Uploaded"}
     

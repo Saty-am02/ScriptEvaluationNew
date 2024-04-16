@@ -21,7 +21,7 @@ generation_config = {
     "temperature": 1,
     "top_p": 0.50,
     "top_k": 40,
-    "max_output_tokens": 400,
+    
 }
 
 safety_settings = [
@@ -31,7 +31,11 @@ safety_settings = [
     {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
 ]
 
-
+genai.configure(api_key=GEMINI_API)
+model_vision = genai.GenerativeModel(
+            "gemini-pro-vision", safety_settings=safety_settings ,generation_config=generation_config
+        )
+model_text = genai.GenerativeModel("gemini-pro",safety_settings=safety_settings,generation_config=generation_config)
 
 
 def save_upload_file(upload_file: UploadFile, destination: Path) -> str:
@@ -87,7 +91,7 @@ def evaluate_answer(expectedAnswerpath, studentAnswerpath, question, max_marks):
     additional_points = ""
     image_string = ""
     try:
-        print('[+]evaluating....')
+        print('[+]evaluating at evaluate_answer_1....')
         pdf2img(expectedAnswerpath)
         expectedAnswer = Image.open("temp.jpeg")
 
@@ -95,37 +99,32 @@ def evaluate_answer(expectedAnswerpath, studentAnswerpath, question, max_marks):
         studentAnswer = Image.open("temp.jpeg")
         
         
-        genai.configure(api_key=GEMINI_API)
-        model_vision = genai.GenerativeModel(
-            "gemini-pro-vision", safety_settings=safety_settings ,generation_config=generation_config
-        )
+        
+        template = f"Input: You will receive scanned images of answer papers as input and a expected answer res for the question {question}.Analyze the images and extract relevant information such as correctness of answers, completeness, clarity of explanations, and adherence to guidelines. Based on the extracted information, assign marks to each answer and provide a clear explanation for the marks assigned. Consider factors such as accuracy, relevance, depth of understanding, presentation, and language proficiency if it is a numerical try to check if the final answer is correct or try extracting the text and comparing them.Output: Create a JSON file containing the analysis results for each answer paper. output : give an output  JSON file should include the following structure for the response (Marks: The total marks obtained by the student out of {max_marks},Reasons: explanations for the marks assigned and area for improvement )"
 
-        response = model_vision.generate_content(
-            [
-                f"The images below are the Expected answer and the student given answer for the question : {question} and the expected answer is {expectedAnswer}, please Evaluate them and give me json file with  the marksout of {max_marks} and the explination why the mark was given(just two key:value pairs marks,explanation),just give me the mark no explanation or sorry message required {additional_points}",
-                studentAnswer,
-            ]
-        )
-
+        testing_template  = """Extract the text and give the output as a json in the format text:"extracted text" """
+        try:
+            response = model_vision.generate_content([testing_template, studentAnswer ])
+        except Exception as e:
+            print(f"[+]error at gemini api] : {e}")
         text = response.text
 
       
-       
+        print(text)
         text = text.split("```")[1]
         text = text.replace("\\n","")
         text = text.replace("json","")
         text = text.replace("\\","")
         text = text.lower()
 
-        print(f"{text}")
+        #print(f"{text}")
         
         return text
     except Exception as e:
         print(f"[-]Error during evaluation : {str(e)}")
         print(expectedAnswerpath)
         print(studentAnswerpath)
-        print(question)
-        print(max_marks)
+        print(template)
         return -1
 
 
@@ -136,21 +135,18 @@ def evaluate_answer_2(expectedAnswer, studentAnswerpath, question, max_marks):
     additional_points = ""
     image_string = ""
     try:
-        print('[+]evaluating....')
+        print('[+]evaluating at evaluate_answer_2....')
 
         image_string = pdf2img(studentAnswerpath)
         studentAnswer = Image.open("temp.jpeg")
         
-        
-        genai.configure(api_key=GEMINI_API)
-        model_vision = genai.GenerativeModel(
-            "gemini-pro-vision", safety_settings=safety_settings
-        )
+        extracted_text= model_vision.generate_content(["Extract the text of the given image",studentAnswer])
 
-        response = model_vision.generate_content(
+        studentAnswer_text = extracted_text.text
+
+        response = model_text.generate_content(
             [
-                f"You are a Answerscript Evluation Machine you read answer script and evaluate the answer now evaluate the answer of the question {question} , the expected answer is {expectedAnswer} , and the maximum marks you can award is {max_marks} ,the question is a numerical type hence the last answer writtern by the student is is very important and neededd too be evluated accordingly , please Evaluate them and give me json file with  the marksout of {max_marks} and the explination why the mark was given(just two key:value pairs marks,explanation)",
-                studentAnswer,
+                f"You are a Answerscript Evluation Machine you read answer script and evaluate the answer now evaluate the answer of the question {question} , the expected answer is {expectedAnswer} , and the maximum marks you can award is {max_marks} ,the question is a numerical type hence the last answer writtern by the student is is very important and needed too be evluated accordingly , please Evaluate them and give me json file with  the marksout of {max_marks} and the explination why the mark was given(just two key:value pairs marks,explanation), the student answer is {studentAnswer_text}",
             ]
         )
 
