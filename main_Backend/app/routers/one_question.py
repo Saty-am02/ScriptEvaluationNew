@@ -174,10 +174,6 @@ def evaluate_answer_2(expectedAnswer, studentAnswerpath, question, max_marks):
 
 
 
-
-
-
-
 @one_api_router.post('/evaluate/one')
 async def One_Question(question:str , mark: str,Expected_answer:str|None=None,ES: UploadFile = File(None),AS: UploadFile=File()):
 

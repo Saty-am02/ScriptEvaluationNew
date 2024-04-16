@@ -1,4 +1,0 @@
-Qid,Max_Marks,Question,Expected_answer_pdf_path
-1,5,Why does bread taste sweet after chewing it for a while?,test_data/biology_ES/Q1.pdf
-2,5,what makes the sound when you pop your knuckles?,test_data/biology_ES/Q2.pdf
-3,10,Draw and Explain the parts of a human neuron,test_data/biology_ES/Q3.pdf
