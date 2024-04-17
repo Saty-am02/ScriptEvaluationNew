@@ -6,3 +6,4 @@ pyrebase
 pillow
 pandas
 PyMuPDF 
+firebase-admin
