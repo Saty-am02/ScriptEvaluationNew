@@ -1,8 +1,0 @@
-uvicorn
-fastapi
-google.generativeai
-python-multipart
-pyrebase
-pillow
-pandas
-PyMuPDF 
