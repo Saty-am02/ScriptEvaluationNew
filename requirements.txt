@@ -8,4 +8,5 @@ pandas==2.2.0
 PyMuPDF==1.23.20
 firebase-admin==6.3.0
 wheel==0.42.0
+requests==2.31.0
 
